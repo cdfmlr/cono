@@ -13,17 +13,19 @@ var config Conf
 var (
 	// Database configures
 	Database = &config.Database
+	// Serving configures
+	Serve = &config.Serve
 )
 
 // Init 加载配置文件，写入 Config。
 // 加载失败将导致程序 Fatal 退出。
 func Init(configFilePath string) {
-	var err error
-
-	// logger with default fields
 	logger := log.WithFields(log.Fields{
 		"configFilePath": configFilePath,
 	})
+	logger.Info("init config")
+
+	var err error
 
 	viper.SetConfigFile(configFilePath)
 
