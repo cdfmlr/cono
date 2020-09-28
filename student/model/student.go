@@ -10,8 +10,8 @@ import (
 // 这里指的学生是一个拥有 学号、教务密码，有资格登录教务系统的实体
 type Student struct {
 	gorm.Model
-	Sid      string `gorm:"unique_index:idx_only_one"`
-	Password string
+	Sid      string `gorm:"unique;uniqueIndex;not null"`
+	Password string `gorm:"not null"`
 }
 
 // GetStudentBySid 获取指定 Sid 的 Student
@@ -31,12 +31,63 @@ func GetStudentBySid(sid string) (*Student, error) {
 	return &student, result.Error
 }
 
-// UpdatePassword 方法更新一个 Student 的密码
-func (s *Student) UpdatePassword(newPassword string) error {
-	if s.ID == 0 {
-		err := fmt.Errorf("UpdatePassword with an emtpy Student: denied")
-		log.WithField("Student", s).Error(err)
+// CreateStudent 创建一条 student 记录
+func CreateStudent(student *Student) error {
+	if student.Sid == "" {
+		err := fmt.Errorf("denied: create student with empty sid")
+		log.Warn("CreateStudent ", err)
 		return err
 	}
-	return DB.Model(&s).Update("password", newPassword).Error
+
+	result := DB.Create(student)
+
+	logger := log.WithFields(log.Fields{
+		"student": student,
+		"result":  result,
+	})
+	if result.Error != nil {
+		logger.Error("CreateStudent failed")
+	} else {
+		logger.Info("CreateStudent success")
+	}
+
+	return result.Error
+}
+
+// GetAllStudents 获取全部学生
+func GetAllStudents() ([]Student, error) {
+	var students []Student
+	result := DB.Find(&students)
+
+	logger := log.WithFields(log.Fields{
+		"result": result,
+	})
+	if result.Error != nil {
+		logger.Error("GetAllStudents failed")
+	} else {
+		logger.Info("GetAllStudents success")
+	}
+
+	return students, result.Error
+}
+
+// Update 方法更新一个 Student
+//    s.Update(newStudent)
+//  - s 为原 student，用来在数据库中确定条目（通过其 gorm.Model.ID），xxx指定的非空条目将被更新。
+//  - newStudent 是要修改成的信息（不包括 gorm.Model），只有非空字段会被更新。
+// GORM 操作参考：https://gorm.io/docs/update.html#Updates-multiple-columns
+func (s *Student) Update(newStudent *Student) error {
+	if s.ID == 0 {
+		err := fmt.Errorf("Update with an emtpy Student: denied")
+		log.WithFields(log.Fields{
+			"s":   s,
+			"new": newStudent,
+		}).Error(err)
+		return err
+	}
+	log.WithFields(log.Fields{
+		"s":   s,
+		"new": newStudent,
+	}).Info("Update: success")
+	return DB.Model(&s).Updates(newStudent).Error
 }

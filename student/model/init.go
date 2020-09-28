@@ -16,7 +16,7 @@ var DB *gorm.DB
 // 连接失败将导致程序 Fatal 退出。
 // 连接的具体方法参考： https://gorm.io/docs/connecting_to_the_database.html#MySQL
 func Init() {
-	log.Info("初始化数据库连接")
+	log.Info("init database")
 
 	// Data Source Name: [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
 	// Refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details.
