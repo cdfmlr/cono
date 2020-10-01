@@ -25,6 +25,7 @@ type Course struct {
 }
 
 // FindCourse 通过给定参数 condCourse 的非空字段在数据库中查找对应课程（复数）。
+// condCourse 不应该包含有被赋值的 gorm.Model 字段，否则不会查询到任何结果。
 //
 // 如果找到了则返回找到的 Course 们，以及一个 nil；
 // 找不到，会返回空 []Course（它的 len == 0），以及一个 nil；
@@ -49,10 +50,9 @@ func FindCourses(condCourse *Course) ([]Course, error) {
 
 // Save 在数据库中保存一条 Course 记录（新建）。
 func (c *Course) Save() error {
-	logger := log.WithField("course", *c)
+	logger := log.WithField("course", c)
 
-	cc := *c
-	err := DB.Create(&cc).Error
+	err := DB.Where(c).FirstOrCreate(c).Error
 
 	if err != nil {
 		logger.WithError(err).Error("Course.Save: failed with unexpected error")

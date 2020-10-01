@@ -53,15 +53,30 @@ func TestCourse_Save(t *testing.T) {
 		Week:     "1-5",
 		When:     "10506",
 	}
+	cCopy, cCopy2 := c, c
+
+	// 新的
 	err := c.Save()
 	if err != nil {
 		t.Error("❌ unexpected Save err:", err)
 	}
-	cc, err := FindCourses(&c)
+	t.Log(">>>>", c, cCopy)
+	cc, err := FindCourses(&cCopy)
 	if err != nil || len(cc) == 0 {
 		t.Log("❌ unexpected err or not found item back:\n--> err:", err, "\n--> cc:", cc)
 	}
 	t.Log("👀 cc (want only the just saved item): len=", len(cc), "\n--> items:", cc)
+
+	// 已存在的
+	err = cCopy.Save()
+	if err != nil {
+		t.Error("❌ unexpected err:", err)
+	}
+	cc, err = FindCourses(&cCopy2)
+	if err != nil || len(cc) != 1 {
+		t.Log("❌ unexpected err or unexpected items back:\n--> err:", err, "\n--> cc:", cc)
+	}
+	t.Log("👀 cc (want only the just saved ONE item): len=", len(cc), "\n--> items:", cc)
 
 }
 
