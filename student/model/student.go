@@ -7,11 +7,13 @@ import (
 )
 
 // Student 是学生模型
-// 这里指的学生是一个拥有 学号、教务密码，有资格登录教务系统的实体
+// 这里指的学生是一个拥有 学号、教务密码，有资格登录教务系统的实体。
+// Student 还有一个 WechatID 字段，表示用户在微信公众号中的用户 id
 type Student struct {
 	gorm.Model
 	Sid      string `gorm:"unique;uniqueIndex;not null"`
 	Password string `gorm:"not null"`
+	WechatID string
 }
 
 // GetStudentBySid 获取指定 Sid 的 Student
@@ -28,6 +30,23 @@ func GetStudentBySid(sid string) (*Student, error) {
 	log.WithFields(log.Fields{
 		"student": student,
 	}).Info("GetStudentBySid: success")
+	return &student, result.Error
+}
+
+// GetStudentByWechatID 获取指定 WechatID 的 Student
+func GetStudentByWechatID(wechatID string) (*Student, error) {
+	var student Student
+	result := DB.Where("wechat_id = ?", wechatID).Find(&student)
+	if student.ID == 0 {
+		log.WithFields(log.Fields{
+			"WechatID": wechatID,
+			"result":   result,
+		}).Warn("GetStudentByWechatID: not exist")
+		return &student, fmt.Errorf("student (wechatID=%s) not exist", wechatID)
+	}
+	log.WithFields(log.Fields{
+		"student": student,
+	}).Info("GetStudentByWechatID: success")
 	return &student, result.Error
 }
 
