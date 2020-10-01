@@ -11,8 +11,22 @@ type ConfDatabase struct {
 	DBName   string
 }
 
+// ConfWxOfficialAccount 是微信公众号服务的配置
+type ConfWxOfficialAccount struct {
+	AppID     string
+	AppSecret string
+	Token     string
+}
+
 // Conf is a struct wraps all configures.
 // field XXX -> <type ConfXXX struct>
 type Conf struct {
+	// 数据库配置
 	Database ConfDatabase
+	// 强智教务系统地址的学校字段
+	QzSchool string
+	// 微信公众号服务配置
+	WxOfficialAccount ConfWxOfficialAccount
+	// StudentRPC 服务地址
+	StudentRPCAddress string
 }

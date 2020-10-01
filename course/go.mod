@@ -3,6 +3,8 @@ module conocourse
 go 1.15
 
 require (
+	github.com/cdfmlr/qzgo v0.0.1
+	github.com/cdfmlr/wxofficialaccount v0.0.0-20200926025108-08929eaffd25
 	github.com/fullstorydev/grpcui v1.0.0 // indirect
 	github.com/golang/protobuf v1.4.1
 	github.com/sirupsen/logrus v1.6.0

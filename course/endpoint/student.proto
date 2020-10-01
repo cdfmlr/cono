@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package endpoint;
+
+message Student {
+  string sid = 1;
+  string password = 2;
+  string wechat_id = 3;
+}
+
+message GetStudentBySidRequest {
+  string sid = 1;
+}
+
+message GetStudentByWechatIDRequest {
+  string wechat_id = 1;
+}
+
+message GetAllStudentsResponse {
+  repeated Student students = 1;
+}
+
+// 空请求/响应体
+message Empty {}
+
+// 学生服务
+service StudentRPC {
+  // 获取指定 sid 的学生
+  rpc GetStudentBySid (GetStudentBySidRequest) returns (Student) {}
+  // 获取指定 WechatID 的学生
+  rpc GetStudentByWechatID(GetStudentByWechatIDRequest) returns (Student) {}
+  // 获取所有学生
+  rpc GetAllStudents (Empty) returns (GetAllStudentsResponse) {}
+  // 保存一个学生，存在则更新，不存在则新建
+  rpc Save(Student) returns (Empty) {}
+}

@@ -13,6 +13,12 @@ var config Conf
 var (
 	// Database configures
 	Database = &config.Database
+	// 强智教务系统学校
+	QzSchool = &config.QzSchool
+	// 微信公众号服务配置
+	WxOfficialAccount = &config.WxOfficialAccount
+	// StudentRPC 服务地址
+	StudentRPCAddress = &config.StudentRPCAddress
 )
 
 // Init 加载配置文件，写入 Config。
