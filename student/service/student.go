@@ -23,6 +23,24 @@ func GetStudentBySid(sid string) (*model.Student, error) {
 	return s, err
 }
 
+// GetStudentByWechatID 获取指定 WechatID 的 Student
+func GetStudentByWechatID(wechatID string) (*model.Student, error) {
+	s, err := model.GetStudentByWechatID(wechatID)
+
+	logger := log.WithFields(log.Fields{
+		"wechatID": wechatID,
+		"student":  s,
+		"err":      err,
+	})
+	if err != nil {
+		logger.Error("GetStudentByWechatID failed")
+	} else {
+		logger.Info("GetStudentByWechatID success")
+	}
+
+	return s, err
+}
+
 // GetAllStudents 获取全部学生
 func GetAllStudents() ([]model.Student, error) {
 	s, err := model.GetAllStudents()

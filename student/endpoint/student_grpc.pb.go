@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 type StudentRPCClient interface {
 	// 获取指定 sid 的学生
 	GetStudentBySid(ctx context.Context, in *GetStudentBySidRequest, opts ...grpc.CallOption) (*Student, error)
+	// 获取指定 WechatID 的学生
+	GetStudentByWechatID(ctx context.Context, in *GetStudentByWechatIDRequest, opts ...grpc.CallOption) (*Student, error)
 	// 获取所有学生
 	GetAllStudents(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllStudentsResponse, error)
 	// 保存一个学生，存在则更新，不存在则新建
@@ -40,6 +42,19 @@ var studentRPCGetStudentBySidStreamDesc = &grpc.StreamDesc{
 func (c *studentRPCClient) GetStudentBySid(ctx context.Context, in *GetStudentBySidRequest, opts ...grpc.CallOption) (*Student, error) {
 	out := new(Student)
 	err := c.cc.Invoke(ctx, "/endpoint.StudentRPC/GetStudentBySid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+var studentRPCGetStudentByWechatIDStreamDesc = &grpc.StreamDesc{
+	StreamName: "GetStudentByWechatID",
+}
+
+func (c *studentRPCClient) GetStudentByWechatID(ctx context.Context, in *GetStudentByWechatIDRequest, opts ...grpc.CallOption) (*Student, error) {
+	out := new(Student)
+	err := c.cc.Invoke(ctx, "/endpoint.StudentRPC/GetStudentByWechatID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,6 +94,8 @@ func (c *studentRPCClient) Save(ctx context.Context, in *Student, opts ...grpc.C
 type StudentRPCService struct {
 	// 获取指定 sid 的学生
 	GetStudentBySid func(context.Context, *GetStudentBySidRequest) (*Student, error)
+	// 获取指定 WechatID 的学生
+	GetStudentByWechatID func(context.Context, *GetStudentByWechatIDRequest) (*Student, error)
 	// 获取所有学生
 	GetAllStudents func(context.Context, *Empty) (*GetAllStudentsResponse, error)
 	// 保存一个学生，存在则更新，不存在则新建
@@ -99,6 +116,23 @@ func (s *StudentRPCService) getStudentBySid(_ interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return s.GetStudentBySid(ctx, req.(*GetStudentBySidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+func (s *StudentRPCService) getStudentByWechatID(_ interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStudentByWechatIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return s.GetStudentByWechatID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     s,
+		FullMethod: "/endpoint.StudentRPC/GetStudentByWechatID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return s.GetStudentByWechatID(ctx, req.(*GetStudentByWechatIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -145,6 +179,11 @@ func RegisterStudentRPCService(s grpc.ServiceRegistrar, srv *StudentRPCService) 
 			return nil, status.Errorf(codes.Unimplemented, "method GetStudentBySid not implemented")
 		}
 	}
+	if srvCopy.GetStudentByWechatID == nil {
+		srvCopy.GetStudentByWechatID = func(context.Context, *GetStudentByWechatIDRequest) (*Student, error) {
+			return nil, status.Errorf(codes.Unimplemented, "method GetStudentByWechatID not implemented")
+		}
+	}
 	if srvCopy.GetAllStudents == nil {
 		srvCopy.GetAllStudents = func(context.Context, *Empty) (*GetAllStudentsResponse, error) {
 			return nil, status.Errorf(codes.Unimplemented, "method GetAllStudents not implemented")
@@ -161,6 +200,10 @@ func RegisterStudentRPCService(s grpc.ServiceRegistrar, srv *StudentRPCService) 
 			{
 				MethodName: "GetStudentBySid",
 				Handler:    srvCopy.getStudentBySid,
+			},
+			{
+				MethodName: "GetStudentByWechatID",
+				Handler:    srvCopy.getStudentByWechatID,
 			},
 			{
 				MethodName: "GetAllStudents",
