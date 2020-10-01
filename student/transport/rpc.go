@@ -22,6 +22,10 @@ func initStudentRPCService() {
 			s, err := service.GetStudentBySid(request.Sid)
 			return endpoint.StudentFromModel(s), err
 		},
+		GetStudentByWechatID: func(ctx context.Context, request *endpoint.GetStudentByWechatIDRequest) (student *endpoint.Student, err error) {
+			s, err := service.GetStudentByWechatID(request.WechatId)
+			return endpoint.StudentFromModel(s), err
+		},
 		GetAllStudents: func(ctx context.Context, empty *endpoint.Empty) (response *endpoint.GetAllStudentsResponse, err error) {
 			students, err := service.GetAllStudents()
 			if err != nil {

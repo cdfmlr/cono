@@ -9,6 +9,8 @@ import (
 // Student 是学生模型
 // 这里指的学生是一个拥有 学号、教务密码，有资格登录教务系统的实体。
 // Student 还有一个 WechatID 字段，表示用户在微信公众号中的用户 id
+//
+// ⚠️注意：数据库不保证 WechatID 的唯一性（也不保证 not null），这些保证由上层调用者来做。
 type Student struct {
 	gorm.Model
 	Sid      string `gorm:"unique;uniqueIndex;not null"`

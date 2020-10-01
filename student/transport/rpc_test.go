@@ -12,6 +12,7 @@ func TestServe(t *testing.T) {
 	config.Init("/Users/c/Desktop/StudentConf.yml")
 	model.Init()
 	service.Init()
+	Init()
 
 	Serve(config.Serve.StudentRPCAddress)
 

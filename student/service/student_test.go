@@ -47,6 +47,33 @@ func TestGetStudentBySid(t *testing.T) {
 	}
 }
 
+func TestGetStudentByWechatID(t *testing.T) {
+	// Setup
+	config.Init("/Users/c/Desktop/StudentConf.yml")
+	model.Init()
+	Init()
+
+	// create data for test
+	s, _ := GetStudentBySid("000")
+	s.WechatID = "wx000000"
+	_ = s.Update(s)
+
+	// not exist
+	sn, err := GetStudentByWechatID("not exist")
+	if err == nil {
+		t.Error("❌ err == nil, sn ==", sn)
+	} else {
+		t.Log("✅ err =", err)
+	}
+
+	// exist
+	ss, err := GetStudentByWechatID("wx000000")
+	if err != nil {
+		t.Error("❌ unexpected error:", err)
+	}
+	t.Log("👀", ss)
+}
+
 func TestSave(t *testing.T) {
 	// Setup
 	config.Init("/Users/c/Desktop/StudentConf.yml")
