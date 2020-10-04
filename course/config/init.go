@@ -19,6 +19,8 @@ var (
 	WxOfficialAccount = &config.WxOfficialAccount
 	// StudentRPC 服务地址
 	StudentRPCAddress = &config.StudentRPCAddress
+	// 课程提醒配置
+	CourseNotice = &config.CourseNotice
 )
 
 // Init 加载配置文件，写入 Config。

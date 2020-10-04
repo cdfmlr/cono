@@ -18,6 +18,17 @@ type ConfWxOfficialAccount struct {
 	Token     string
 }
 
+type ConfCourseNotice struct {
+	// CourseTicker 运行周期，多久检查一次上课通知
+	CoursesCheckPeriodSec int
+	// 上课前多久通知
+	RecentCourseThresholdSec int
+	// 多久刷新一次可能的开始上课时间
+	BeginRefreshPeriodSec int
+	// 上课提醒的微信公众号模版消息 ID
+	WxRecentCoursesNoticeTemplateMsgID string
+}
+
 // Conf is a struct wraps all configures.
 // field XXX -> <type ConfXXX struct>
 type Conf struct {
@@ -29,4 +40,6 @@ type Conf struct {
 	WxOfficialAccount ConfWxOfficialAccount
 	// StudentRPC 服务地址
 	StudentRPCAddress string
+	// 课程提醒配置
+	CourseNotice ConfCourseNotice
 }

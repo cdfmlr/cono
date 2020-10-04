@@ -38,6 +38,20 @@ func TestFindCourses(t *testing.T) {
 	t.Log("👀", len(cs), cs)
 }
 
+func TestFindAllCourses(t *testing.T) {
+	// Setup
+	log.SetReportCaller(true)
+	config.Init("/Users/c/Desktop/CourseConf.yml")
+	Init()
+
+	cs, err := FindAllCourses()
+	if err != nil {
+		t.Error("❌ unexpected err:", err)
+	} else {
+		t.Log("👀", len(cs), "\titems:", cs)
+	}
+}
+
 func TestCourse_Save(t *testing.T) {
 	// Setup
 	log.SetReportCaller(true)
@@ -119,4 +133,28 @@ func TestCourse_Delete(t *testing.T) {
 	} else {
 		t.Log("✅ blank result and nil error: ", ccc, err)
 	}
+}
+
+func TestFindCoursesAt(t *testing.T) {
+	// Setup
+	log.SetReportCaller(true)
+	config.Init("/Users/c/Desktop/CourseConf.yml")
+	Init()
+
+	// not exist
+	cs, err := FindCoursesAt(time.Monday, "24:00")
+	if err != nil {
+		t.Error("❌ unexpected err:", err)
+	} else if len(cs) != 0 {
+		t.Error("❌ unexpected len(cs):", len(cs), "\titems:", cs)
+	} else {
+		t.Log("✅", len(cs), "\titems:", cs)
+	}
+
+	// exist
+	cs, err = FindCoursesAt(time.Monday, "08:00")
+	if err != nil {
+		t.Error("❌ unexpected err:", err)
+	}
+	t.Log("👀", len(cs), cs)
 }

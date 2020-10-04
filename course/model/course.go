@@ -2,8 +2,10 @@ package model
 
 import (
 	"fmt"
+	"github.com/cdfmlr/qzgo"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"time"
 )
 
 // Course 表示一条课程。
@@ -38,6 +40,47 @@ func FindCourses(condCourse *Course) ([]Course, error) {
 	var coursesFound []Course
 
 	err := DB.Where(condCourse).Find(&coursesFound).Error
+
+	if err == nil {
+		logger.WithField("len_courses_found", len(coursesFound)).Info("FindCourse: success")
+	} else {
+		logger.WithField("err", err).Error("FindCourse: failed")
+	}
+
+	return coursesFound, err
+}
+
+// FindAllCourses 获取所有课程
+func FindAllCourses() ([]Course, error) {
+	var coursesFound []Course
+	err := DB.Find(&coursesFound).Error
+
+	if err == nil {
+		log.WithField("len_courses_found", len(coursesFound)).Info("FindAllCourses: success")
+	} else {
+		log.WithField("err", err).Error("FindAllCourses: failed")
+	}
+
+	return coursesFound, err
+}
+
+// FindCoursesAt 查找 周几几点 的所有课程（不论周次）
+// e.g.
+//    FindCoursesAt(time.Monday, "08:00")
+// 查询周一 08:00 开始的所有课程
+func FindCoursesAt(weekday time.Weekday, begin string) ([]Course, error) {
+	logger := log.WithFields(log.Fields{
+		"weekday": weekday,
+		"begin":   begin,
+	})
+
+	qzWeekday := qzgo.TimeWeekToQzWeekday(weekday)
+
+	var coursesFound []Course
+
+	err := DB.Where("`begin` = ?", begin).
+		Where("`when` LIKE ?", fmt.Sprintf("%d%%", qzWeekday)).
+		Find(&coursesFound).Error
 
 	if err == nil {
 		logger.WithField("len_courses_found", len(coursesFound)).Info("FindCourse: success")
