@@ -66,6 +66,40 @@ func (e *Elective) Delete() error {
 	return err
 }
 
+// FindElectivesOfCourse 找出 course.ID 代表的课程的所有 Elective 关系条目。
+//
+// ⚠️ 注意：如果出错（返回 err != nil 时），返回的 courses 可能为 nil
+func FindElectivesOfCourse(course Course) (electives []Elective, err error) {
+	logger := log.WithField("cid", course.ID)
+
+	err = DB.Where("cid = ?", course.ID).Find(&electives).Error
+
+	if err != nil {
+		logger.WithError(err).Error("FindElectivesOfCourse failed: querying electives: got an unexpected error")
+	} else {
+		logger.WithField("len_electives_found", len(electives)).Info("FindElectivesOfCourse: querying electives: success")
+	}
+
+	return electives, err
+}
+
+// FindElectivesOfStudent 找出 sid 代表的学生选的所有课，返回 electives with Course preloaded。
+//
+// ⚠️ 注意：如果出错（返回 err != nil 时），返回的 courses 可能为 nil
+func FindElectivesOfStudent(sid string) (electives []Elective, err error) {
+	logger := log.WithField("sid", sid)
+
+	err = DB.Where("sid = ?", sid).Preload("Course").Find(&electives).Error
+
+	if err != nil {
+		logger.WithError(err).Error("FindElectivesOfStudent failed: querying electives: got an unexpected error")
+	} else {
+		logger.WithField("len_electives_found", len(electives)).Info("FindElectivesOfStudent: querying electives: success")
+	}
+
+	return electives, err
+}
+
 // FindCoursesOfStudent 找出 sid 代表的学生选的所有课。
 //
 // ⚠️ 注意：如果出错（返回 err != nil 时），返回的 courses 可能为 nil

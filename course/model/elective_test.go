@@ -195,3 +195,93 @@ func TestFindStudentsOfCourse(t *testing.T) {
 		})
 	}
 }
+
+func TestFindElectivesOfCourse(t *testing.T) {
+	// Setup
+	log.SetReportCaller(true)
+	log.SetLevel(log.TraceLevel)
+	config.Init("/Users/c/Desktop/CourseConf.yml")
+	Init()
+
+	var electivesOfCid2 []Elective
+	DB.Where("cid = ?", 2).Find(&electivesOfCid2)
+
+	type args struct {
+		course Course
+	}
+	tests := []struct {
+		name          string
+		args          args
+		wantElectives []Elective
+		wantErr       bool
+	}{
+		{
+			name:          "empty",
+			args:          args{course: Course{}},
+			wantElectives: []Elective{},
+			wantErr:       false,
+		},
+		{
+			name: "not_exist",
+			args: args{course: Course{Model: gorm.Model{
+				ID: 99999999999,
+			}}},
+			wantElectives: []Elective{},
+			wantErr:       false,
+		},
+		{
+			name:          "exist",
+			args:          args{course: Course{Model: gorm.Model{ID: 2}}},
+			wantElectives: electivesOfCid2,
+			wantErr:       false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotElectives, err := FindElectivesOfCourse(tt.args.course)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FindElectivesOfCourse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotElectives, tt.wantElectives) {
+				t.Errorf("FindElectivesOfCourse() gotElectives = %v, want %v", gotElectives, tt.wantElectives)
+			}
+			t.Log(gotElectives)
+		})
+	}
+}
+
+func TestFindElectivesOfStudent(t *testing.T) {
+	// Setup
+	log.SetReportCaller(true)
+	log.SetLevel(log.TraceLevel)
+	config.Init("/Users/c/Desktop/CourseConf.yml")
+	Init()
+
+	type args struct {
+		sid string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name:    "TestFindCoursesOfStudent",
+			args:    args{sid: "TestElective_Save"},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotElectives, err := FindElectivesOfStudent(tt.args.sid)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("FindElectivesOfStudent() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			for i, e := range gotElectives {
+				t.Log(i, e.ID, e.Sid, e.Cid, e.Course)
+			}
+		})
+	}
+}
