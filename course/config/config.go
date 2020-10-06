@@ -42,4 +42,6 @@ type Conf struct {
 	StudentRPCAddress string
 	// 课程提醒配置
 	CourseNotice ConfCourseNotice
+	// 服务终止提醒的微信公众号模版消息 ID
+	WxDiscontinueServiceTemplateMsgID string
 }
