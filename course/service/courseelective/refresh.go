@@ -43,7 +43,7 @@ func Refresh() {
 	success := 0
 
 	for _, student := range students {
-		if err := refreshStudent(student); err == nil {
+		if err := RefreshStudent(student); err == nil {
 			success++
 		}
 
@@ -58,18 +58,23 @@ func Refresh() {
 
 }
 
-// refreshStudent 从教务系统刷新一个学生的选课
-func refreshStudent(student *endpoint.Student) error {
+// RefreshStudent 从教务系统刷新一个学生的选课
+//
+// 注意：密码字段为 DiscontinuedPassword 的学生将不再刷新。
+//
+// 在每个学生处理完成后，有 0~10 秒的随机睡眠。
+// 登录系统失败的学生会被放到 FailedStudents 中待处理。
+func RefreshStudent(student *endpoint.Student) error {
 	// 跳过标记为停止服务的学生
 	if student.Password == discontinueservice.DiscontinuedPassword {
-		log.WithField("student", student).Info("refreshStudent: skip a blank-password student")
+		log.WithField("student", student).Info("RefreshStudent: skip a blank-password student")
 		return nil
 	}
 
 	// 登录
 	qzCli, err := transport.NewQzClient(student)
 	if err != nil {
-		log.WithError(err).WithField("student", student).Warn("courseelective Refresh: student logging failed. Put student into FailedStudents")
+		log.WithError(err).WithField("student", student).Warn("courseelective RefreshStudent: student logging failed. Put student into FailedStudents")
 
 		go handleFailedStudent(student.Sid)
 		return err
@@ -97,7 +102,7 @@ func refreshStudent(student *endpoint.Student) error {
 
 // handleFailedStudent 尝试处理刷新失败的学生。
 //
-// 该函数会在一个小时后重试 refreshStudent。
+// 该函数会在一个小时后重试 RefreshStudent。
 // 当连续失败次数 > MaxFailedTimes 时，忍痛决定停止对该学生的服务。
 func handleFailedStudent(sid string) {
 	logger := log.WithField("student", sid)
@@ -122,7 +127,7 @@ func handleFailedStudent(sid string) {
 			logger.WithError(err).Error("handleFailedStudent: get student from conostudent failed!")
 			return
 		}
-		go refreshStudent(student)
+		go RefreshStudent(student)
 	})
 }
 

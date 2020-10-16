@@ -44,6 +44,11 @@ func clean(sid string, courses []model.Course) {
 		logger.WithError(err).Error("clean failed to find previous Electives of student.")
 	}
 
+	if len(previousElectives) == 0 {
+		logger.Info("clean success: there are no previousElectives to be cleaned.")
+		return
+	}
+
 	// 新课程 courses 中各项的哈希值 map
 	newMap := make(map[string]model.Course)
 	for _, c := range courses {
