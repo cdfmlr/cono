@@ -23,6 +23,10 @@ var (
 	CourseNotice = &config.CourseNotice
 	// 服务终止提醒的微信公众号模版消息 ID
 	WxDiscontinueServiceTemplateMsgID = &config.WxDiscontinueServiceTemplateMsgID
+	// License
+	License = &config.License
+	// Usage
+	Usage = &config.Usage
 )
 
 // Init 加载配置文件，写入 Config。

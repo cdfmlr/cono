@@ -16,6 +16,7 @@ type ConfWxOfficialAccount struct {
 	AppID     string
 	AppSecret string
 	Token     string
+	Address   string
 }
 
 type ConfCourseNotice struct {
@@ -44,4 +45,8 @@ type Conf struct {
 	CourseNotice ConfCourseNotice
 	// 服务终止提醒的微信公众号模版消息 ID
 	WxDiscontinueServiceTemplateMsgID string
+	// License
+	License string
+	// Usage
+	Usage string
 }
