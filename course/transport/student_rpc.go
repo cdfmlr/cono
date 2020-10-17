@@ -20,3 +20,5 @@ func initStudentRPC() {
 
 	StudentRPCClient = endpoint.NewStudentRPCClient(cliConn)
 }
+
+// TODO: Wrap APIs. Be Friendly to callers.

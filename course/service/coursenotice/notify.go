@@ -21,8 +21,10 @@ func NotifyRecentCourses(courses []model.Course) {
 		sids, err := model.FindStudentsOfCourse(course.ID)
 		if err != nil {
 			logger.WithError(err).Error("NotifyRecentCourses failed when FindStudentsOfCourse")
-			if sids == nil { // 如果不为空的话还是通知一下，有一个算一个
-				continue
+			// 如果不为空的话还是通知一下，有一个算一个
+			// 是 nil 咱就没法了：
+			if sids == nil {
+				continue    // nil sids: skip this course. Continue for next course
 			}
 		}
 

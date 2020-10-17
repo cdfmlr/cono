@@ -34,6 +34,7 @@ func notice(student *endpoint.Student, reason string) {
 
 func deleteStudent(student *endpoint.Student) {
 	// 删除选课关系
+	// TODO: 如果课程没人选了，也要把课程一并删除
 	electives, err := model.FindElectivesOfStudent(student.Sid)
 	if err != nil {
 		log.WithError(err).WithField("student", student).Error("find electives of student failed")
