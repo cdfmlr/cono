@@ -1,6 +1,7 @@
 package wxsubscript
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strings"
 	"sync"
@@ -16,7 +17,7 @@ type responder struct {
 	sessions sync.Map // {fromUser: session}
 }
 
-func (r responder) Respond(fromUser string, reqContent string) chan string {
+func (r *responder) Respond(fromUser string, reqContent string) chan string {
 	logger := log.WithFields(log.Fields{
 		"fromUser":   fromUser,
 		"reqContent": reqContent,
@@ -31,18 +32,30 @@ func (r responder) Respond(fromUser string, reqContent string) chan string {
 		switch {
 		case isReqSubscribe(reqContent):
 			logger.Info("respond for Subscribe request")
-			s := *NewSubscribeSession(fromUser, reqContent)
+			s := NewSubscribeSession(fromUser, reqContent)
 			r.sessions.Store(fromUser, s)
 			response <- s.Verify()
 		case isReqUnsubscribe(reqContent):
 			logger.Info("respond for UnsubscribeSession request")
-			s := *NewUnsubscribeSession(fromUser, reqContent)
+			s := NewUnsubscribeSession(fromUser, reqContent)
 			r.sessions.Store(fromUser, s)
 			response <- s.Verify()
 		case isReqVerification(reqContent):
 			logger.Info("respond for Verification request")
-			if s, loaded := r.sessions.LoadAndDelete(fromUser); loaded {
-				response <- s.(Session).Continue(reqContent)
+			if si, loaded := r.sessions.Load(fromUser); loaded {
+				s, ok := si.(Session)
+				if !ok {
+					log.WithFields(log.Fields{
+						"si": fmt.Sprintf("%#v", si),
+						"s":  s,
+						"ok": ok,
+					}).Error("Convert interface failed")
+					r.sessions.Delete(fromUser)
+					response <- "服务器内部错误"
+					return
+				}
+				response <- s.Continue(reqContent)
+				r.sessions.Delete(fromUser)
 			} else {
 				response <- "😯你发这个干嘛？"
 			}

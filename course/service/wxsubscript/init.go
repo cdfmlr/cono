@@ -19,5 +19,8 @@ func ResponderInstance() Responder {
 
 func Init() {
 	log.Info("init service/wxsubscript...")
-	transport.WxOfficialAccount.SetMessageHandler(Handler)
+}
+
+func Run() {
+	transport.WxHttpServe(Handler)
 }

@@ -14,6 +14,9 @@ import (
 func TestWxsubscript(t *testing.T) {
 	// Setup
 	log.SetReportCaller(true)
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors: true,
+	})
 	config.Init("/Users/c/Desktop/CourseConf.yml")
 	model.Init()
 	transport.Init()

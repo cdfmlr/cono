@@ -4,6 +4,7 @@ import (
 	"conocourse/endpoint"
 	"conocourse/service/courseelective"
 	"conocourse/transport"
+	"context"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"regexp"
@@ -83,8 +84,18 @@ func (s *SubscribeSession) Continue(verificationCode string) string {
 		return "验证码错误，以为您取消订阅。"
 	}
 
+	_, err := transport.StudentRPCClient.Save(context.Background(), &s.student)
+	if err != nil {
+		log.WithError(err).Error("SubscribeSession Continue: save student failed")
+		return "订阅失败！\n服务器内部错误"
+	}
+	err = courseelective.RefreshStudent(&s.student)
+	if err != nil {
+		log.WithError(err).Error("SubscribeSession Continue: courseelective.RefreshStudent failed")
+		return "订阅失败！\n暂时无法获取课表，将在稍后重试。"
+	}
+
 	log.WithField("student", s.student).Info("SubscribeSession: student subscription added.")
 
-	_ = courseelective.RefreshStudent(&s.student)
 	return "订阅成功！\n我们会在每门课上课前通知你哦。🤝"
 }
