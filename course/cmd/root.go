@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"conocourse/config"
+	"conocourse/model"
+	"conocourse/service"
+	"conocourse/transport"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -14,7 +18,14 @@ var rootCmd = &cobra.Command{
 	Short: "cono course server",
 	Long:  `conocourse is a part of cono. It offers the courses subscription service (including wechat serving, jw query & notice).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: boot here
+		// Init
+		config.Init(cfgFile)
+		model.Init()
+		transport.Init()
+		service.Init()
+
+		// Start services
+		service.Run()
 	},
 }
 

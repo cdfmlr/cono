@@ -1,7 +1,16 @@
 package main
 
+import (
+	"github.com/sirupsen/logrus"
+	"log"
+)
+
 func init() {
-	// TODO: uncomment the following lines for production environment:
-	//log.SetFormatter(&log.JSONFormatter{}) // log in JSON
-	//log.SetReportCaller(true)              // include the calling method as a field.
+	// go log
+	log.SetPrefix("[conocourse] ")
+
+	// logrus
+	// DONE: uncomment the following lines for production environment:
+	logrus.SetFormatter(&logrus.JSONFormatter{}) // log in JSON
+	logrus.SetReportCaller(true)                 // include the calling method as a field.
 }
